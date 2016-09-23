@@ -30,6 +30,7 @@ usage(char *program) {
     " -i <id>          Set session id; range: 0-65535 (default: 1515)\n"
     " -t <type>        Set ICMP type (default: 8)\n"
     " -p <packetsize>  Set packet size (default: 512)\n"
+    " -s <seconds>     Set time (in sec) between beacons (default: 1 )\n"
     "\nexample:\n"
     "%s -i 65535 -t 0 -p 1024 [host]\n"
     "\n", VERSION, program, program);
@@ -157,14 +158,15 @@ ish_listen(int sockfd, struct sockaddr *sin, socklen_t sinlen) {
 
 int
 main(int argc, char *argv[]) {
-    int     sockfd;
+    int     sockfd, delay;
     char    *host, opt;
     struct  sockaddr_in sin;
     struct  hostent *he;
 
     // default should be type 8
     ish_info.type = 8;
-    while((opt = getopt(argc, argv, "hdi:t:p:")) != -1) {
+    delay = 1;
+    while((opt = getopt(argc, argv, "hdi:t:p:s:")) != -1) {
         switch(opt) {
         	case 'h':
             	usage(argv[0]);
@@ -181,6 +183,9 @@ main(int argc, char *argv[]) {
         	case 'p':
             	ish_info.packetsize = atoi(optarg);
             	break;
+            case 's':
+                delay = atoi(optarg);
+                break;
         }
     }
     host = argv[argc-1];
@@ -220,7 +225,8 @@ main(int argc, char *argv[]) {
         if(ish_beacon(sockfd, (struct sockaddr *)&sin, sizeof(sin)) == 0){
             ish_listen(sockfd, (struct sockaddr *)&sin, sizeof(sin));
         }
-        sleep(1);
+        //time between beacons
+        sleep(delay);
     }
     
     close(sockfd);
