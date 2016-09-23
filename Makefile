@@ -16,7 +16,7 @@ default:
 
 
 clean:
-	/bin/rm -f ish ishd
+	/bin/rm -f client server
 
 linux:	clean cc1 fin
 
@@ -33,6 +33,6 @@ cc2:
 	$(CC) $(CFLAGS2) -o server server.c core.c popen2.c
 
 fin:
-	$(STRIP) ish
-	$(STRIP) ishd
+	$(STRIP) client
+	$(STRIP) server
 
